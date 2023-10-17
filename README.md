@@ -6,6 +6,10 @@
 
 En esta primera páctica de SQL se han tocado todos los concepto básicos realizando diversos ejercicios simples utilizando la base de datos World. En ella se observan diversos datos como los continentes, las regiones, la poblacion o la esperanza de vida entre otros. 
 
+## 2 Práctica 
+
+En esta segunda páctica de SQL se han tocado todos los concepto básicos realizando diversos ejercicios simples utilizando la base de datos Sakila. En ella se observan diversos datos como los actores, peliculas, direcciones, tiendas y ciudad, entre otras variables. 
+
 ## Aprendizaje Continuo
 
 Siempre estoy buscando oportunidades para aprender y crecer como analista. He participado en cursos en línea, así como he asistido a conferencias. Mantengo un registro de mis actividades de aprendizaje para mostrar mi compromiso con el crecimiento constante.
