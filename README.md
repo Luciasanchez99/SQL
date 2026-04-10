@@ -10,6 +10,10 @@ En esta primera páctica de SQL se han tocado todos los concepto básicos realiz
 
 En esta segunda páctica de SQL se han tocado todos los concepto básicos realizando diversos ejercicios simples utilizando la base de datos Sakila. En ella se observan diversos datos como los actores, peliculas, direcciones, tiendas y ciudad, entre otras variables. 
 
+## 1 Caso de uso 
+
+En este archivo, se puede observar un código de sql creado y utilizado para la lectura automática de carpetas. El cliente necesitaba dejar todos los días un archivo csv en una carpeta y poder verlo junto con la información aportada del erp. Por ello, se ha creado un código en el cual se lee dicha carpeta, la recorre para buscar el archivo csv y carga esa información en una tabla de nuestra base de datos. No tiene ninguna transformación de datos, solo trabaja los datos en bruto. El usuario que aporta el csv tiene que cuidar el formato que suba ya que, sino se tiene un buen código de calidad del dato posterior, puede causar problemas en los siguientes procedimientos e incluso, en la herramienta de reporte.
+
 ## Aprendizaje Continuo
 
 Siempre estoy buscando oportunidades para aprender y crecer como analista. He participado en cursos en línea, así como he asistido a conferencias. Mantengo un registro de mis actividades de aprendizaje para mostrar mi compromiso con el crecimiento constante.
