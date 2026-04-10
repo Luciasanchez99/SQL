@@ -1,0 +1,132 @@
+USE [QC]
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE  PROCEDURE [dbo].[PROC_DOMAIN_Tabla_uno]
+
+AS
+
+BEGIN
+
+BEGIN TRY
+	BEGIN TRANSACTION
+
+	DECLARE @path NVARCHAR(100) = '\\carpeta_global\carpeta_uno\' -- ruta del CSV **PENDIENTE DE CAMBIAR**
+	DECLARE @CSVs TABLE (namecsv VARCHAR(100)) -- tabla donde almacenaremos el nombre del csv
+	DECLARE @comando NVARCHAR(100) = 'dir /b ' + @path + '*.csv'
+	DECLARE @query NVARCHAR(MAX)
+	DECLARE @csv nvarchar(100)
+	DECLARE @procesados nvarchar(200)
+
+	INSERT INTO @CSVs
+	EXEC xp_cmdshell @comando -- ejecutamos @comando e insertamos el resultado en tabla @csv
+
+	select *
+	from @CSVs
+
+	-- Filtrar el primer csv válido
+	SET @csv = (
+		SELECT TOP 1 namecsv 
+		FROM @CSVs 
+		WHERE namecsv IS NOT NULL AND namecsv <> 'File Not Found')
+
+  
+	-- Validar si no hay csv válidos
+	IF @csv IS NULL
+	BEGIN
+		PRINT 'No se encontraron los csv en la ruta especificada.'
+		ROLLBACK TRANSACTION
+		RETURN
+	END
+
+	-- Cursor para procesar csvs válidos
+
+	DECLARE C1 CURSOR FOR
+		SELECT namecsv FROM @CSVs  WHERE namecsv IS NOT NULL 
+	OPEN C1;
+	FETCH NEXT FROM C1 INTO @csv -- Inicializacion de variable @csv con valor csvs[0] 
+
+	IF OBJECT_ID('tempdb..##TEMP_Tabla_temporal_uno') IS NOT NULL
+    DROP TABLE ##TEMP_Tabla_temporal_uno;
+	
+	CREATE TABLE ##TEMP_Tabla_temporal_uno 
+	( [Columna1] [varchar] (500) NULL
+		, [Columna2] [nvarchar](500) NULL
+		, [Columna3] [nvarchar](500) NULL
+		, [Columna4][nvarchar](500) NULL
+	) ON [PRIMARY]
+	print 'prebucle'
+	WHILE @@FETCH_STATUS = 0
+		BEGIN 
+		-- INICIO BUCLE
+			SET @query = '
+				BULK INSERT ##TEMP_Tabla_temporal_uno
+				FROM ''' + @path + @csv + '''
+				WITH (
+					CODEPAGE = ''65001'', -- UTF-8 encoding
+					FIELDTERMINATOR = '';'', -- delimitador
+					ROWTERMINATOR = ''\n'', -- la fila se indica con el salto de línea
+					FIRSTROW = 2 -- porque tiene encabezados en la línea 1
+				)
+			'
+			EXEC(@query)
+			print(@query)
+			SET @procesados = 'move "' + @path + @csv + '" "' + @path + 'Processed\"'
+			FETCH NEXT FROM C1 INTO @csv
+		END 
+		-- FIN BUCLE
+	CLOSE C1;
+    DEALLOCATE C1;
+	print 'postbucle'
+
+
+	/* CREATE TABLE [DOMAIN].[dbo].[Tabla_uno]
+	(   [Columna1] [varchar] (500) NULL
+		, [Columna2] [nvarchar](500) NULL
+		, [Columna3] [nvarchar](500) NULL
+		, [Columna4][nvarchar](500) NULL
+		) 
+		*/ 
+
+	truncate table [DOMAIN].[dbo].[Tabla_uno]
+    INSERT INTO [DOMAIN].[dbo].[Tabla_uno] ( 
+		[Columna1] 
+		, [Columna2]
+		, [Columna3]
+		, [Columna4]
+		)
+    SELECT 
+		  [Columna1] 
+		  , [Columna2]
+		  , [Columna3]
+		  , [Columna4]
+  FROM ##TEMP_Tabla_temporal_uno
+
+  COMMIT TRANSACTION;
+
+END TRY
+
+BEGIN CATCH
+	DECLARE @ErrorMessage NVARCHAR(4000);
+    DECLARE @ErrorSeverity INT;
+    DECLARE @ErrorState INT;
+
+    SELECT @ErrorMessage = ERROR_MESSAGE(),
+           @ErrorSeverity = ERROR_SEVERITY(),
+           @ErrorState = ERROR_STATE();
+
+	IF @@TRANCOUNT > 0
+		ROLLBACK TRANSACTION;
+
+    RAISERROR (@ErrorMessage, 
+               @ErrorSeverity, 
+               @ErrorState 
+               );
+END CATCH
+
+
+END
