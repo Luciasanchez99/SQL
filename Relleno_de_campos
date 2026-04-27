@@ -1,0 +1,39 @@
+USE [DATA_QC]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[TABLA1]  AS
+
+	TRUNCATE TABLE DATA_QC.dbo.Tabla1;
+
+		WITH Pivoted AS (
+    SELECT *
+    FROM (
+        SELECT 
+            Columna_idioma,
+            Columna_id,
+            Columna_desc
+        FROM data_ods.dbo.tabla1
+    ) AS Fuente
+    PIVOT (
+        MAX(Columna_desc)
+        FOR Columna_idioma IN ([D], [E], [I], [P], [S], [F])
+    ) AS TablaPivoteada
+)
+
+	INSERT INTO data_qc.dbo.Tabla1
+		(columna1
+, columna2
+, columna3
+, Columna_pivoteada
+,upload_date
+		)
+select columna1
+, columna2
+, columna3
+, COALESCE(NULLIF([E], ''), NULLIF([S], ''), NULLIF([D], ''), NULLIF([I], ''), NULLIF([P], ''), NULLIF([F], '')) AS Columna_pivoteada
+, T.[upload_date]
+from data_ODS.DBO.Tabla1 T
+LEFT JOIN Pivoted T2 ON T2.Columna_id=T.columna_id
