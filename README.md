@@ -16,7 +16,7 @@ En este archivo, se puede observar un código de sql creado y utilizado para la 
 
 ## 2 Caso de uso 
 
-En este archivo, se puede observar un código de sql creado y utilizado para enviar alertas desde el sql server hasta 
+En este archivo, se puede observar un código de sql creado y utilizado para enviar alertas desde el sql server mediante correo electrónico. Sirve para programar kpis que quieres controlar y que no necesariamente necesitas ver en un reporte. También para controlar flujos internos. 
 
 ## 3 Caso de uso 
 
